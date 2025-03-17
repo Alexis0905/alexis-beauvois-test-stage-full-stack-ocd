@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @author Alexis Beauvois alexisbeauvois5@gmail.com
+ */
 class Person extends Model
 {
     /**

@@ -4,6 +4,9 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * @author Alexis Beauvois alexisbeauvois5@gmail.com
+ */
 return new class extends Migration
 {
     /**

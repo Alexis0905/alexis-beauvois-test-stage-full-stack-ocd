@@ -20,8 +20,72 @@
         @endif
     </head>
     <body>
-        <a href="/people">INDEX</a><br/>
-        <a href="/people/1">SHOW</a><br/>
-        <a href="/people/create">CREATE</a><br/>
+        <table class="m-4 w-8/10 text-left">
+            <tr class="uppercase bg-white sticky top-0 border-solid border-1 border-gray-200">
+                <th class="w-1/25 p-1">id</th>
+                <th class="w-1/6 p-1">first_name</th>
+                <th class="w-1/6 p-1">last_name</th>
+                <th class="w-1/6 p-1">birth_name</th>
+                <th class="w-1/4 p-1">middle_names</th>
+                <th class="w-1/6 p-1">date_of_birth</th>
+            </tr>
+            <tr class="even:bg-gray-100 odd:bg-white border-solid border-1 border-gray-200">
+                <td class="p-1">{{ $person->id }}</td>
+                <td class="p-1">{{ $person->first_name }}</td>
+                <td class="p-1">{{ $person->last_name }}</td>
+                <td class="p-1">{{ $person->birth_name }}</td>
+                <td class="p-1">{{ $person->middle_names }}</td>
+                <td class="p-1">{{ $person->date_of_birth }}</td>
+            </tr>
+        </table>
+        @if(!$children->isEmpty())
+            <br/>
+            <table class="m-4 w-8/10 text-left">
+                <caption class="text-left font-bold text-xl">SES ENFANTS</caption>
+                <tr class="uppercase bg-white sticky top-0 border-solid border-1 border-gray-200">
+                    <th class="w-1/25 p-1">id</th>
+                    <th class="w-1/6 p-1">first_name</th>
+                    <th class="w-1/6 p-1">last_name</th>
+                    <th class="w-1/6 p-1">birth_name</th>
+                    <th class="w-1/4 p-1">middle_names</th>
+                    <th class="w-1/6 p-1">date_of_birth</th>
+                </tr>
+                @foreach($children as $child)
+                    <tr class="even:bg-gray-100 odd:bg-white border-solid border-1 border-gray-200">
+                        <td class="p-1">{{ $child->id }}</td>
+                        <td class="p-1">{{ $child->first_name }}</td>
+                        <td class="p-1">{{ $child->last_name }}</td>
+                        <td class="p-1">{{ $child->birth_name }}</td>
+                        <td class="p-1">{{ $child->middle_names }}</td>
+                        <td class="p-1">{{ $child->date_of_birth }}</td>
+                    </tr>
+                @endforeach
+            </table>
+        @endif
+        @if(!$parents->isEmpty())
+            <table class="m-4 w-8/10 text-left">
+                <br/>
+                <caption class="text-left font-bold text-xl">SES PARENTS</caption>
+                <tr class="uppercase bg-white sticky top-0 border-solid border-1 border-gray-200">
+                    <th class="w-1/25 p-1">id</th>
+                    <th class="w-1/6 p-1">first_name</th>
+                    <th class="w-1/6 p-1">last_name</th>
+                    <th class="w-1/6 p-1">birth_name</th>
+                    <th class="w-1/4 p-1">middle_names</th>
+                    <th class="w-1/6 p-1">date_of_birth</th>
+                </tr>
+                @foreach($parents as $parent)
+                    <tr class="even:bg-gray-100 odd:bg-white border-solid border-1 border-gray-200">
+                        <td class="p-1">{{ $parent->id }}</td>
+                        <td class="p-1">{{ $parent->first_name }}</td>
+                        <td class="p-1">{{ $parent->last_name }}</td>
+                        <td class="p-1">{{ $parent->birth_name }}</td>
+                        <td class="p-1">{{ $parent->middle_names }}</td>
+                        <td class="p-1">{{ $parent->date_of_birth }}</td>
+                    </tr>
+                @endforeach
+            </table>
+        @endif
     </body>
 </html>
+
