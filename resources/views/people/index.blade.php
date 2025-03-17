@@ -24,11 +24,14 @@
             <div class="text-green-500">
                 {{ session('success') }}
             </div>
-        @else
+        @endif
+
+        @if(session('error'))
             <div class="text-red-500">
                 {{ session('error') }}
             </div>
         @endif
+
         <table class="m-4 w-auto text-left">
             <tr class="uppercase bg-white sticky top-0 border-solid border-1 border-gray-200">
                 <th class="w-1/25 p-1">id</th>
@@ -42,7 +45,7 @@
             @foreach($people as $person)
                 <tr class="even:bg-gray-100 odd:bg-white border-solid border-1 border-gray-200">
                     <td class="p-1">{{ $person->id }}</td>
-                    <td class="p-1">{{ $person->creator->first_name.' '.$person->creator->last_name }}</td>
+                    <td class="p-1">{{ $person->creator->name }}</td>
                     <td class="p-1">{{ $person->first_name }}</td>
                     <td class="p-1">{{ $person->last_name }}</td>
                     <td class="p-1">{{ $person->birth_name }}</td>
