@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @author Alexis Beauvois alexisbeauvois5@gmail.com
+ */
 class Relationship extends Model
 {
     /**

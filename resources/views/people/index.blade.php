@@ -20,8 +20,37 @@
         @endif
     </head>
     <body>
-        <a href="/people">INDEX</a><br/>
-        <a href="/people/1">SHOW</a><br/>
-        <a href="/people/create">CREATE</a><br/>
+        @if(session('success'))
+            <div class="text-green-500">
+                {{ session('success') }}
+            </div>
+        @else
+            <div class="text-red-500">
+                {{ session('error') }}
+            </div>
+        @endif
+        <table class="m-4 w-auto text-left">
+            <tr class="uppercase bg-white sticky top-0 border-solid border-1 border-gray-200">
+                <th class="w-1/25 p-1">id</th>
+                <th class="w-1/6 p-1">created_by</th>
+                <th class="w-1/6 p-1">first_name</th>
+                <th class="w-1/6 p-1">last_name</th>
+                <th class="w-1/6 p-1">birth_name</th>
+                <th class="w-1/4 p-1">middle_names</th>
+                <th class="w-1/6 p-1">date_of_birth</th>
+            </tr>
+            @foreach($people as $person)
+                <tr class="even:bg-gray-100 odd:bg-white border-solid border-1 border-gray-200">
+                    <td class="p-1">{{ $person->id }}</td>
+                    <td class="p-1">{{ $person->creator->first_name.' '.$person->creator->last_name }}</td>
+                    <td class="p-1">{{ $person->first_name }}</td>
+                    <td class="p-1">{{ $person->last_name }}</td>
+                    <td class="p-1">{{ $person->birth_name }}</td>
+                    <td class="p-1">{{ $person->middle_names }}</td>
+                    <td class="p-1">{{ $person->date_of_birth }}</td>
+                </tr>
+            @endforeach
+        </table>
     </body>
 </html>
+
