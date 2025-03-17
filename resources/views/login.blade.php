@@ -20,41 +20,33 @@
         @endif
     </head>
     <body>
+        <h1 class="text-2xl font-extrabold text-center m-4">Connexion</h1>
+
         @if(session('success'))
-            <div class="text-green-500">
+            <div class="text-green-500 text-center">
                 {{ session('success') }}
             </div>
         @endif
-        
-        @if(session('error'))
-            <div class="text-red-500">
-                {{ session('error') }}
+
+        @if($errors->any())
+            <div class="text-red-500 text-center">
+                {{ $errors->first() }}
             </div>
         @endif
 
-        <div class="m-4">
-            <a href="/people" class="hover:text-blue-500">INDEX</a>
-        </div>
-
-        <div class="m-4">
-            <a href="/people/1" class="hover:text-blue-500">SHOW</a>
-        </div>
-
-        <div class="m-4">
-            <a href="/people/create" class="hover:text-blue-500">CREATE</a>
-        </div>
-
-        <div class="m-4">
-            <a href="/login" class="hover:text-blue-500">LOGIN</a>
-        </div>
-
-        @if(Auth::check())
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <div class="m-4">
-                    <button type="submit" class="hover:text-blue-500">LOGOUT</button>
-                </div>
-            </form>
-        @endif
+        <form action="{{ route('login') }}" method="POST" class="w-1/3 shadow border border-gray-300 justify-self-center p-5 bg-gray-50 rounded-xl">
+            @csrf
+            <div class="mb-6">
+                <label class="font-bold"  for="email">Email :</label>
+                <input class="w-full shadow border border-gray-500 rounded bg-white p-1"  type="email" name="email" id="email" required>
+            </div>
+            <div class="mb-6">
+                <label class="font-bold"  for="password">Mot de passe :</label>
+                <input class="w-full shadow border border-gray-500 rounded bg-white p-1"  type="password" name="password" id="password" required>
+            </div>
+            <div class="flex justify-center">
+                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded" type="submit">Se connecter</button>
+            </div>
+        </form>
     </body>
 </html>

@@ -20,8 +20,8 @@
     @endif
 </head>
 <body>
-    <h1 class="text-2xl font-extrabold text-center">Cr&eacute;er une personne</h1>
-    <br/>
+    <h1 class="text-2xl font-extrabold text-center m-4">Cr&eacute;er une personne</h1>
+
     <form action="{{ route('people.store') }}" method="POST" class="w-1/3 shadow border border-gray-300 justify-self-center p-5 bg-gray-50 rounded-xl">
         @csrf
         <div class="mb-6">
