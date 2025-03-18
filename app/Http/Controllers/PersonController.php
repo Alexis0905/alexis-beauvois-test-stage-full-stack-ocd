@@ -27,8 +27,9 @@ class PersonController extends Controller
      */
     public function create(): RedirectResponse | View
     {
-        if (!Auth::check()) {
-            return redirect()->route('login')->with('error', 'You must be logged in!');
+        if (!Auth::check())
+        {
+            return redirect()->route('login')->with('error', 'You must be logged in');
         }
         return view('people.create');
     }
@@ -37,12 +38,21 @@ class PersonController extends Controller
      * @param $id L'id de la personne à afficher
      * @return View La vue show
      */
-    public function show($id): View
+    public function show(Request $request): View
     {
-        $person = Person::all()->find($id);
-        $children = Person::all()->find($person->children->where('parent_id', $person->id)->pluck('child_id'));
-        $parents = Person::all()->find($person->parents->where('child_id', $person->id)->pluck('parent_id'));
-        return view('people.show', ['person' => $person, 'children' => $children, 'parents' => $parents]);
+        if ($request->isMethod('POST'))
+        {
+            $validatedData = $request->validate
+            ([
+                'person_id' => ['required']
+            ]);
+
+            $person = Person::find($validatedData['person_id']);
+            $children = Person::find($person->children->where('parent_id', $person->id)->pluck('child_id'));
+            $parents = Person::find($person->parents->where('child_id', $person->id)->pluck('parent_id'));
+        }
+
+        return view('people.show', ['person' => $person ?? null, 'children' => $children ?? null, 'parents' => $parents ?? null]);
     }
 
     /**
@@ -51,7 +61,8 @@ class PersonController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $validatedData = $request->validate([
+        $validatedData = $request->validate
+        ([
             'first_name' => ['required', 'max:255'],
             'last_name' => ['required', 'max:255'],
             'birth_name' => ['nullable', 'max:255'],
@@ -69,10 +80,36 @@ class PersonController extends Controller
         $person->birth_name = $validatedData['birth_name']
             ? strtoupper($validatedData['birth_name'])
             : $person->last_name;
-        $person->date_of_birth = date('Y-m-d', strtotime($validatedData['date_of_birth'])) ?? null;
+        $person->date_of_birth = $validatedData['date_of_birth']
+            ? date('Y-m-d', strtotime($validatedData['date_of_birth']))
+            : null;
 
         $person->save();
 
         return redirect('/people')->with('success', 'Person created!');
     }
+
+    /**
+     * @param Request $request Les données du formulaire pour afficher le degré de parenté
+     * @return View La vue degree
+     */
+    public function degree(Request $request): View
+    {
+        if ($request->isMethod('post'))
+        {
+            $person = Person::findOrFail($request->person_id);
+            $result = $person->getDegreeWith($request->target_person_id);
+        }
+
+        return view(
+            'people.degree',
+            [
+                'degree' => isset($result) ? (is_array($result) ? $result['degree'] : $result) : null,
+                'time' => $result['time'] ?? null,
+                'nb_queries' => $result['nb_queries'] ?? null,
+                'shortest_path' => $result['shortest_path'] ?? null
+            ]
+        );
+    }
+
 }
