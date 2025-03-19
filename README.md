@@ -26,10 +26,11 @@
 ### <u>Question 1</u>
 
 <b>Modèle entité-association</b>
-![img.png](img.png)
+<img src="https://github.com/Alexis0905/alexis-beauvois-test-stage-full-stack-ocd/blob/c4ce538cdc0620ccf8a8703cd8c25e792a382e7a/MCD%20E-A%20Alexis%20Beauvois%20test%20stage%20O'CD.png" alt=""/>
 
 <b>MLD pour visualiser les clés étrangères</b>
-![img_1.png](img_1.png)
+<img src="https://github.com/Alexis0905/alexis-beauvois-test-stage-full-stack-ocd/blob/c4ce538cdc0620ccf8a8703cd8c25e792a382e7a/MLD%20Alexis%20Beauvois%20test%20stage%20O'CD.png" alt=""/>
+
 
 <hr/>
 
