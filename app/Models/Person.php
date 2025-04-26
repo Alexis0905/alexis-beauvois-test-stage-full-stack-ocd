@@ -160,13 +160,15 @@ class Person extends Model
     {
         $path = [];
         $current = $intersect_node;
-        while ($current !== null) {
+        while ($current !== null)
+        {
             array_unshift($path, $current);
             $current = $explored_root[$current]['person_id'];
         }
 
         $current = $explored_target[$intersect_node]['person_id'];
-        while ($current !== null) {
+        while ($current !== null)
+        {
             array_push($path, $current);
             $current = $explored_target[$current]['person_id'];
         }
