@@ -47,6 +47,12 @@
                     Le nombre de requ&ecirc;te est de : <span class="text-black">{{ $nb_queries }}</span>
                 </p>
                 <p class="text-center m-4 text-green-500 font-bold">
+                    La m&eacute;moire utilis&eacute;e est de : <span class="text-black">{{ $memory }} Mo</span>
+                </p>
+                <p class="text-center m-4 text-green-500 font-bold">
+                    Le pic de m&eacute;moire utilis&eacute;e est de : <span class="text-black">{{ $memory_peak }} Mo</span>
+                </p>
+                <p class="text-center m-4 text-green-500 font-bold">
                     Le plus court chemin est :
                     <span class="text-black">
                         @foreach($shortest_path as $elt)

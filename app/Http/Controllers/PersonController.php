@@ -107,7 +107,9 @@ class PersonController extends Controller
                 'degree' => isset($result) ? (is_array($result) ? $result['degree'] : $result) : null,
                 'time' => $result['time'] ?? null,
                 'nb_queries' => $result['nb_queries'] ?? null,
-                'shortest_path' => $result['shortest_path'] ?? null
+                'shortest_path' => $result['shortest_path'] ?? null,
+                'memory' => $result['memory'] ?? null,
+                'memory_peak' => $result['memory_peak'] ?? null
             ]
         );
     }

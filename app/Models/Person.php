@@ -56,85 +56,121 @@ class Person extends Model
     }
 
     /**
-     * @param $target_person_id L'id de la personne donnée
+     * @param $target_person_id L'id de la personne cible
      * @return array|false Le degré de parenté, le temps d'exécution, le nombre de requêtes et le plus court chemin ou false
      */
-    public function getDegreeWith($target_person_id): array | false
+    public function getDegreeWith($target_person_id): array|false
     {
+        $memstart = memory_get_usage();
         $timestart = microtime(true);
         DB::enableQueryLog();
-        $queue = new SplQueue();
-        $explored = [];
+
+        $queue_root = new SplQueue();
+        $queue_target = new SplQueue();
+        $explored_root = [];
+        $explored_target = [];
         $root_id = $this->id;
 
-        $queue->enqueue([$root_id, 0]);
-        $explored[] = $root_id;
+        $queue_root->enqueue([$root_id, 0]);
+        $queue_target->enqueue([$target_person_id, 0]);
 
-        $relationships = DB::select("
-            SELECT child_id, parent_id FROM relationships
-        ");
+        $explored_root[$root_id] = ['person_id' => null, 'degree' => 0];
+        $explored_target[$target_person_id] = ['person_id' => null, 'degree' => 0];
 
-        $graph = [];
-        foreach ($relationships as $relationship)
+        $degree = null;
+        $intersect_person_id = null;
+
+        while (!$queue_root->isEmpty() && !$queue_target->isEmpty())
         {
-            $graph[$relationship->parent_id][] = $relationship->child_id;
-            $graph[$relationship->child_id][] = $relationship->parent_id;
-        }
+            $result = $this->ProgressInGraph($queue_root, $explored_root, $explored_target);
+            if ($result !== null)
+            {
+                $intersect_person_id = $result['intersect_person'];
+                $degree = $result['degree'];
+                break;
+            }
 
-        while (!$queue->isEmpty())
-        {
-            list($person_id, $degree) = $queue->dequeue();
+            $result = $this->ProgressInGraph($queue_target, $explored_target, $explored_root);
+            if ($result !== null)
+            {
+                $intersect_person_id = $result['intersect_person'];
+                $degree = $result['degree'];
+                break;
+            }
 
             if ($degree > 25)
             {
                 return false;
             }
+        }
 
-            if ($person_id == $target_person_id)
-            {
-                return
-                [
-                    'degree' => $degree,
-                    'time' => (microtime(true) - $timestart)*1000,
-                    'nb_queries' => count(DB::getQueryLog()),
-                    'shortest_path' => $this->rebuildShortestPath($explored, $target_person_id)
-                ];
-            }
+        return
+        [
+            'degree' => $degree,
+            'time' => (microtime(true) - $timestart) * 1000,
+            'nb_queries' => count(DB::getQueryLog()),
+            'shortest_path' => $this->rebuildShortestPath($explored_root, $explored_target, $intersect_person_id),
+            'memory' => (memory_get_usage() - $memstart) / 1024 / 1024,
+            'memory_peak' => (memory_get_peak_usage() - $memstart) / 1024 / 1024
+        ];
+    }
 
-            if(isset($graph[$person_id]))
+    /**
+     * @param $queue_this_side La queue de ce côté à parcourir
+     * @param $explored_this_side Le tableau des personnes de ce côté à explorer
+     * @param $explored_other_side Le tableau des personnes de l'autre côté à explorer
+     * @return array|null La personne à l'intersection des deux BFS et le degré ou null
+     */
+    private function ProgressInGraph($queue_this_side, &$explored_this_side, $explored_other_side)
+    {
+        list($person_id, $degree) = $queue_this_side->dequeue();
+
+        $children = DB::select("SELECT child_id FROM relationships WHERE parent_id = $person_id");
+        $parents = DB::select("SELECT parent_id FROM relationships WHERE child_id = $person_id");
+        $neighbors = array_unique(array_merge(array_column($parents, 'parent_id'), array_column($children, 'child_id')));
+
+        foreach ($neighbors as $neighbor)
+        {
+            if (!isset($explored_this_side[$neighbor]))
             {
-                foreach ($graph[$person_id] as $adjacent_person_id)
+                $explored_this_side[$neighbor] = ['person_id' => $person_id, 'degree' => $degree + 1];
+                $queue_this_side->enqueue([$neighbor, $degree + 1]);
+
+                if (isset($explored_other_side[$neighbor]))
                 {
-                    if(!isset($explored[$adjacent_person_id]))
-                    {
-                        $explored[$adjacent_person_id] = $person_id;
-                        $queue->enqueue([$adjacent_person_id, $degree + 1]);
-                    }
+                    return
+                    [
+                        'intersect_person' => $neighbor,
+                        'degree' => $degree + 1 + $explored_other_side[$neighbor]['degree']
+                    ];
                 }
             }
         }
 
-        return false;
+        return null;
     }
 
     /**
-     * @param $explored Le tableau des ids des personnes explorées
-     * @param $target_person_id L'id de la personne donnée
-     * @return array Le tableau qui correspond au plus court chemin
+     * @param $explored_root Le tableau des personnes explorées depuis la racine
+     * @param $explored_target Le tableau des personnes explorées depuis la cible
+     * @param $intersect_node La personne à l'intersection des deux BFS
+     * @return array Le plus court chemin de la racine à la cible
      */
-    private function rebuildShortestPath($explored, $target_person_id): array
+    private function rebuildShortestPath($explored_root, $explored_target, $intersect_node)
     {
-        $shortest_path = [];
-        $root_id = $this->id;
-
-        while ($target_person_id !== $root_id)
-        {
-            array_unshift($shortest_path, $target_person_id);
-            $target_person_id = $explored[$target_person_id];
+        $path = [];
+        $current = $intersect_node;
+        while ($current !== null) {
+            array_unshift($path, $current);
+            $current = $explored_root[$current]['person_id'];
         }
 
-        array_unshift($shortest_path, $root_id);
+        $current = $explored_target[$intersect_node]['person_id'];
+        while ($current !== null) {
+            array_push($path, $current);
+            $current = $explored_target[$current]['person_id'];
+        }
 
-        return $shortest_path;
+        return $path;
     }
 }
